@@ -1,0 +1,15 @@
+.env
+.env.local
+.env.*.local
+node_modules/
+.next/
+dist/
+build/
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+*.log
+*.tsbuildinfo
+CLAUDE.md
+plans/
