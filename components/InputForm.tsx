@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { CompanyInput, RiskAppetite, Sector, Stage, ThesisConfig } from '@/lib/types';
+import FounderDiscovery from './FounderDiscovery';
 
 const STAGES: Stage[] = ['Pre-seed', 'Seed', 'Series A'];
 const SECTORS: Sector[] = ['Fintech', 'AI-Dev-Tools', 'Consumer', 'Healthcare', 'Other'];
@@ -16,22 +17,22 @@ interface InputFormProps {
 export default function InputForm({ onSubmit }: InputFormProps) {
   const [name, setName] = useState('');
   const [website, setWebsite] = useState('');
-  const [founders, setFounders] = useState('');
+  const [founders, setFounders] = useState<string[]>([]);
   const [stage, setStage] = useState<Stage>('Seed');
   const [sector, setSector] = useState<Sector>('Fintech');
   const [checkSize, setCheckSize] = useState(1_000_000);
   const [riskAppetite, setRiskAppetite] = useState<RiskAppetite>('Balanced');
 
+  const canSubmit = name.trim().length > 0 && website.trim().length > 0 && founders.length > 0;
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!canSubmit) return;
 
     const company: CompanyInput = {
       name: name.trim(),
       website: website.trim(),
-      founders: founders
-        .split(',')
-        .map((f) => f.trim())
-        .filter(Boolean),
+      founders,
     };
     const thesis: ThesisConfig = { stage, sector, checkSize, riskAppetite };
     onSubmit(company, thesis);
@@ -53,15 +54,7 @@ export default function InputForm({ onSubmit }: InputFormProps) {
             className={inputClass}
           />
         </Field>
-        <Field label="Founder name(s), comma-separated">
-          <input
-            required
-            value={founders}
-            onChange={(e) => setFounders(e.target.value)}
-            placeholder="Ada Lovelace, Alan Turing"
-            className={inputClass}
-          />
-        </Field>
+        <FounderDiscovery companyName={name} website={website} onChange={setFounders} />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -109,9 +102,16 @@ export default function InputForm({ onSubmit }: InputFormProps) {
         </Field>
       </div>
 
-      <button type="submit" className="rounded-md bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white">
+      <button
+        type="submit"
+        disabled={!canSubmit}
+        className="rounded-md bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-40"
+      >
         Run research
       </button>
+      {!canSubmit && founders.length === 0 && name.trim() && website.trim() && (
+        <p className="text-sm text-neutral-500">Find and confirm at least one founder to continue.</p>
+      )}
     </form>
   );
 }

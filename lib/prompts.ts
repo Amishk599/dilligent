@@ -12,6 +12,16 @@ function companyHeader(company: CompanyInput): string {
   return `Company: ${company.name} (${company.website}).`;
 }
 
+export function buildFounderDiscoveryPrompt(name: string, website: string): string {
+  return (
+    `Identify the public founders/co-founders of ${name} (${website}). For each person, ` +
+    `give their full name, their founding title/role (e.g. "Co-founder & CEO"), and a source URL ` +
+    `that confirms they are a founder of this specific company. Only include people publicly ` +
+    `confirmed as founders or co-founders — do not include employees, investors, or advisors ` +
+    `who are not founders.`
+  );
+}
+
 export function buildPrompt(leg: LegResult['leg'], company: CompanyInput, thesis: ThesisConfig): string {
   const header = companyHeader(company);
   const thesisLine = thesisContext(thesis);

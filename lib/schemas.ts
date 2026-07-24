@@ -16,6 +16,32 @@ export function scoreFieldFor(leg: LegResult['leg']): string {
   return SCORE_FIELD[leg];
 }
 
+export function buildFounderDiscoverySchema() {
+  return {
+    type: 'object',
+    properties: {
+      founders: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            title: { type: 'string' },
+            source_url: {
+              type: 'string',
+              description: 'URL of a source confirming this person is a founder of this company.',
+            },
+          },
+          required: ['name', 'title', 'source_url'],
+          additionalProperties: false,
+        },
+      },
+    },
+    required: ['founders'],
+    additionalProperties: false,
+  } as const;
+}
+
 export function buildOutputSchema(leg: LegResult['leg']) {
   const scoreField = SCORE_FIELD[leg];
   return {
