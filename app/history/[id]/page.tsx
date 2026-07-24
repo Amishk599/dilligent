@@ -119,7 +119,6 @@ function NavBar() {
         >
           Past Researches
         </Link>
-        <span className="font-mono text-xs uppercase tracking-widest opacity-50">AI VC Analyst</span>
       </div>
     </nav>
   );
