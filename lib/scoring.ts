@@ -6,6 +6,9 @@ const WEIGHTS: Record<Stage, LegWeights> = {
   'Pre-seed': { market: 25, founders: 50, competitive: 25 },
   Seed: { market: 30, founders: 40, competitive: 30 },
   'Series A': { market: 40, founders: 25, competitive: 35 },
+  'Series B': { market: 40, founders: 20, competitive: 40 },
+  'Series C+': { market: 35, founders: 15, competitive: 50 },
+  Growth: { market: 30, founders: 10, competitive: 60 },
 };
 
 const THRESHOLDS: Record<RiskAppetite, { strongFit: number; fitWithReservations: number }> = {

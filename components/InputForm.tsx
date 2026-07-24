@@ -6,9 +6,31 @@ import FounderDiscovery from './FounderDiscovery';
 import Button from './Button';
 import Eyebrow from './Eyebrow';
 
-const STAGES: Stage[] = ['Pre-seed', 'Seed', 'Series A'];
-const SECTORS: Sector[] = ['Fintech', 'AI-Dev-Tools', 'Consumer', 'Healthcare', 'Other'];
+const STAGES: Stage[] = ['Pre-seed', 'Seed', 'Series A', 'Series B', 'Series C+', 'Growth'];
+const SECTORS: Sector[] = [
+  'Fintech',
+  'AI-Dev-Tools',
+  'Enterprise-SaaS',
+  'Consumer',
+  'Healthcare',
+  'Biotech',
+  'Climate',
+  'Deep-Tech',
+  'Hardware',
+  'Crypto-Web3',
+  'Other',
+];
 const RISK_APPETITES: RiskAppetite[] = ['Conservative', 'Balanced', 'Aggressive'];
+
+// Editable placeholder only -- not yet wired into scoring/research. See note in the
+// handoff about whether/how to feed this into the Research API prompts.
+const DEFAULT_METHODOLOGY = `We back category-defining founders solving large, structurally growing markets.
+
+Weight founder-market fit and execution velocity most heavily at early stages; weight defensibility (proprietary data, distribution, network effects, regulatory position) more heavily as the company matures.
+
+Pass on: crowded markets without a clear wedge, over-priced rounds with founder-unfriendly terms baked in, teams without a demonstrated ability to ship.
+
+Favor capital-efficient growth over growth-at-all-costs. Require at least one structural moat beyond first-mover speed.`;
 
 const inputClass =
   'w-full rounded-[10px] border border-border-subtle bg-white px-3 py-2.5 text-sm text-text-primary outline-none focus:border-text-primary';
@@ -25,6 +47,7 @@ export default function InputForm({ onSubmit }: InputFormProps) {
   const [sector, setSector] = useState<Sector>('Fintech');
   const [checkSize, setCheckSize] = useState(1_000_000);
   const [riskAppetite, setRiskAppetite] = useState<RiskAppetite>('Balanced');
+  const [methodology, setMethodology] = useState(DEFAULT_METHODOLOGY);
 
   const canSubmit = name.trim().length > 0 && website.trim().length > 0 && founders.length > 0;
 
@@ -37,7 +60,7 @@ export default function InputForm({ onSubmit }: InputFormProps) {
       website: website.trim(),
       founders,
     };
-    const thesis: ThesisConfig = { stage, sector, checkSize, riskAppetite };
+    const thesis: ThesisConfig = { stage, sector, checkSize, riskAppetite, methodology: methodology.trim() || undefined };
     onSubmit(company, thesis);
   }
 
@@ -107,6 +130,15 @@ export default function InputForm({ onSubmit }: InputFormProps) {
             </select>
           </Field>
         </div>
+
+        <Field label="Investment methodology & principles">
+          <textarea
+            value={methodology}
+            onChange={(e) => setMethodology(e.target.value)}
+            rows={6}
+            className={`${inputClass} resize-y font-mono text-xs leading-relaxed`}
+          />
+        </Field>
       </div>
 
       <div className="space-y-2">

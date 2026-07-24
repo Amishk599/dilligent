@@ -1,5 +1,16 @@
-export type Stage = 'Pre-seed' | 'Seed' | 'Series A';
-export type Sector = 'Fintech' | 'AI-Dev-Tools' | 'Consumer' | 'Healthcare' | 'Other';
+export type Stage = 'Pre-seed' | 'Seed' | 'Series A' | 'Series B' | 'Series C+' | 'Growth';
+export type Sector =
+  | 'Fintech'
+  | 'AI-Dev-Tools'
+  | 'Enterprise-SaaS'
+  | 'Consumer'
+  | 'Healthcare'
+  | 'Biotech'
+  | 'Climate'
+  | 'Deep-Tech'
+  | 'Hardware'
+  | 'Crypto-Web3'
+  | 'Other';
 export type RiskAppetite = 'Conservative' | 'Balanced' | 'Aggressive';
 
 export interface ThesisConfig {
@@ -7,6 +18,7 @@ export interface ThesisConfig {
   sector: Sector;
   checkSize: number;
   riskAppetite: RiskAppetite;
+  methodology?: string; // free-text fund investment methodology/principles, folded into research prompts
 }
 
 export interface CompanyInput {

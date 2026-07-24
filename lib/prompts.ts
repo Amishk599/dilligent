@@ -1,10 +1,17 @@
 import type { CompanyInput, LegResult, ThesisConfig } from './types';
 
 function thesisContext(thesis: ThesisConfig): string {
-  return (
+  const base =
     `Investment thesis to score against: Stage ${thesis.stage}, Sector ${thesis.sector}, ` +
     `Check size $${thesis.checkSize.toLocaleString()}, Risk appetite ${thesis.riskAppetite}. ` +
-    `Score strictly relative to this thesis — never as an absolute or universal verdict.`
+    `Score strictly relative to this thesis — never as an absolute or universal verdict.`;
+
+  if (!thesis.methodology?.trim()) return base;
+
+  return (
+    `${base} Apply this fund's investment methodology and principles when researching, ` +
+    `weighing evidence, and scoring — let it shape which risks and strengths you emphasize:\n` +
+    `"""\n${thesis.methodology.trim()}\n"""`
   );
 }
 
