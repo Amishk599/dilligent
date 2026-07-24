@@ -1,10 +1,12 @@
 import type { ButtonHTMLAttributes } from 'react';
+import Link from 'next/link';
 import Chevron from './Chevron';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary';
   size?: 'md' | 'sm';
   withChevron?: boolean;
+  href?: string; // when set, renders as a Next.js Link styled identically to the button
 }
 
 const VARIANT_CLASSES: Record<'primary' | 'secondary', string> = {
@@ -21,15 +23,24 @@ export default function Button({
   variant = 'primary',
   size = 'md',
   withChevron = true,
+  href,
   className = '',
   children,
   ...props
 }: ButtonProps) {
+  const classes = `inline-flex items-center gap-2 font-medium transition-opacity disabled:cursor-not-allowed disabled:opacity-40 ${SIZE_CLASSES[size]} ${VARIANT_CLASSES[variant]} ${className}`;
+
+  if (href) {
+    return (
+      <Link href={href} className={classes}>
+        {children}
+        {withChevron && <Chevron />}
+      </Link>
+    );
+  }
+
   return (
-    <button
-      className={`inline-flex items-center gap-2 font-medium transition-opacity disabled:cursor-not-allowed disabled:opacity-40 ${SIZE_CLASSES[size]} ${VARIANT_CLASSES[variant]} ${className}`}
-      {...props}
-    >
+    <button className={classes} {...props}>
       {children}
       {withChevron && <Chevron />}
     </button>
