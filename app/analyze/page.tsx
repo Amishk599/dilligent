@@ -31,9 +31,17 @@ export default function AnalyzePage() {
           <PixelMark />
           <span className="text-lg font-bold tracking-tight">Dilligent</span>
         </div>
-        <span className="font-mono text-xs uppercase tracking-widest opacity-50">
-          AI VC Analyst
-        </span>
+        <div className="flex items-center gap-5">
+          <a
+            href="/history"
+            className="font-mono text-xs uppercase tracking-widest text-text-muted transition-colors hover:text-text-primary"
+          >
+            Past Researches
+          </a>
+          <span className="font-mono text-xs uppercase tracking-widest opacity-50">
+            AI VC Analyst
+          </span>
+        </div>
       </nav>
 
       <main className="mx-auto max-w-3xl px-6 py-12">

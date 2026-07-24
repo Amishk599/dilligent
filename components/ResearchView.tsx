@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { CompanyInput, LegResult, LegStreamEvent, Memo, Source, ThesisConfig } from '@/lib/types';
 import { aggregateRisks, computeComposite, recommendationFor, weightsFor } from '@/lib/scoring';
+import { saveResearch } from '@/lib/history';
 import Eyebrow from './Eyebrow';
 
 type LegStatus = 'pending' | 'running' | 'done' | 'error';
@@ -88,16 +89,35 @@ async function streamLeg(
 interface ResearchViewProps {
   company: CompanyInput;
   thesis: ThesisConfig;
+  /** When provided, skip streaming and render this saved data directly (read-only replay mode). */
+  savedLegs?: LegResult[];
 }
 
 // Single continuously-updating view: each of the 3 leg slots independently renders
 // pending -> running-with-ticker -> filled-in card as its own SSE stream settles, rather
 // than gating everything behind all 3 legs completing.
-export default function ResearchView({ company, thesis }: ResearchViewProps) {
-  const [legSlots, setLegSlots] = useState<Record<LegResult['leg'], LegSlot>>(initialLegSlots);
-  const [citedSource, setCitedSource] = useState<Source | null>(null);
+export default function ResearchView({ company, thesis, savedLegs }: ResearchViewProps) {
+  const isReadOnly = savedLegs != null;
 
+  // In read-only mode, initialise all slots as 'done' from stored data.
+  const [legSlots, setLegSlots] = useState<Record<LegResult['leg'], LegSlot>>(() => {
+    if (isReadOnly && savedLegs) {
+      return Object.fromEntries(
+        LEG_ORDER.map((leg) => {
+          const result = savedLegs.find((r) => r.leg === leg);
+          return [leg, { leg, status: result ? 'done' : 'error', liveSources: [], result } as LegSlot];
+        })
+      ) as unknown as Record<LegResult['leg'], LegSlot>;
+    }
+    return initialLegSlots();
+  });
+  const [citedSource, setCitedSource] = useState<Source | null>(null);
+  const hasSaved = useRef(false);
+
+  // Live-streaming mode: fire all 3 legs in parallel.
   useEffect(() => {
+    if (isReadOnly) return; // skip streaming when replaying a saved run
+
     const controller = new AbortController();
 
     function update(leg: LegResult['leg'], patch: Partial<LegSlot>) {
@@ -145,6 +165,8 @@ export default function ResearchView({ company, thesis }: ResearchViewProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Auto-save once all legs settle (live mode only). The hasSaved ref ensures
+  // this fires exactly once even if the component re-renders after settling.
   const weights = weightsFor(thesis.stage);
   const allSettled = LEG_ORDER.every((leg) => legSlots[leg].status === 'done' || legSlots[leg].status === 'error');
 
@@ -164,7 +186,24 @@ export default function ResearchView({ company, thesis }: ResearchViewProps) {
     );
     const compositeScore = computeComposite(legs, thesis.stage);
     composite = { compositeScore, recommendation: recommendationFor(compositeScore, thesis.riskAppetite) };
+
+    // Auto-save to history — once, in live mode only, when at least one leg succeeded.
+    if (!isReadOnly && !hasSaved.current && legs.some((l) => !l.error)) {
+      hasSaved.current = true;
+      try {
+        saveResearch({
+          company,
+          thesis,
+          legs,
+          compositeScore,
+          recommendation: composite.recommendation,
+        });
+      } catch {
+        // Storage quota exceeded — silently skip rather than crashing the UI.
+      }
+    }
   }
+
 
   const settledRisks = aggregateRisks(
     LEG_ORDER.filter((leg) => legSlots[leg].status === 'done' || legSlots[leg].status === 'error').map(

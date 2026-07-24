@@ -59,3 +59,13 @@ export interface Memo {
   recommendation: 'Strong Fit' | 'Fit with Reservations' | 'Pass';
   risksAndOpenQuestions: string[];
 }
+
+export interface SavedResearch {
+  id: string;               // crypto.randomUUID()
+  savedAt: string;          // ISO timestamp
+  company: CompanyInput;
+  thesis: ThesisConfig;
+  legs: LegResult[];
+  compositeScore: number;
+  recommendation: Memo['recommendation'];
+}
