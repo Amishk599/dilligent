@@ -2,36 +2,26 @@
 
 import { useState } from 'react';
 import InputForm from '@/components/InputForm';
-import ResearchProgress from '@/components/ResearchProgress';
-import MemoView from '@/components/MemoView';
+import ResearchView from '@/components/ResearchView';
 import PixelMark from '@/components/PixelMark';
-import { buildMemo } from '@/lib/scoring';
-import type { CompanyInput, LegResult, Memo, ThesisConfig } from '@/lib/types';
+import type { CompanyInput, ThesisConfig } from '@/lib/types';
 
-type PageState = 'input' | 'running' | 'done';
+type PageState = 'input' | 'running';
 
 const SHELL_CLASSES: Record<PageState, string> = {
   input: 'bg-bg-cream text-text-primary',
-  running: 'bg-bg-dark text-text-on-dark',
-  done: 'bg-bg-cream text-text-primary',
+  running: 'bg-bg-cream text-text-primary',
 };
 
 export default function Home() {
   const [pageState, setPageState] = useState<PageState>('input');
   const [company, setCompany] = useState<CompanyInput | null>(null);
   const [thesis, setThesis] = useState<ThesisConfig | null>(null);
-  const [memo, setMemo] = useState<Memo | null>(null);
 
   function handleSubmit(company: CompanyInput, thesis: ThesisConfig) {
     setCompany(company);
     setThesis(thesis);
     setPageState('running');
-  }
-
-  function handleComplete(legs: LegResult[]) {
-    if (!company || !thesis) return;
-    setMemo(buildMemo(company, thesis, legs));
-    setPageState('done');
   }
 
   return (
@@ -48,10 +38,7 @@ export default function Home() {
 
       <main className="mx-auto max-w-3xl px-6 py-12">
         {pageState === 'input' && <InputForm onSubmit={handleSubmit} />}
-        {pageState === 'running' && company && thesis && (
-          <ResearchProgress company={company} thesis={thesis} onComplete={handleComplete} />
-        )}
-        {pageState === 'done' && memo && <MemoView memo={memo} />}
+        {pageState === 'running' && company && thesis && <ResearchView company={company} thesis={thesis} />}
       </main>
 
       <FloatingBadge />

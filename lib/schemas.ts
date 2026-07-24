@@ -42,6 +42,31 @@ export function buildFounderDiscoverySchema() {
   } as const;
 }
 
+export function buildSourceSummarySchema() {
+  return {
+    type: 'object',
+    properties: {
+      summaries: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            url: { type: 'string' },
+            summary: {
+              type: 'string',
+              description: 'One or two sentence plain-language summary of that source\'s excerpt, no citation markers.',
+            },
+          },
+          required: ['url', 'summary'],
+          additionalProperties: false,
+        },
+      },
+    },
+    required: ['summaries'],
+    additionalProperties: false,
+  } as const;
+}
+
 export function buildOutputSchema(leg: LegResult['leg']) {
   const scoreField = SCORE_FIELD[leg];
   return {

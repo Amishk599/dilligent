@@ -22,6 +22,45 @@ export function buildFounderDiscoveryPrompt(name: string, website: string): stri
   );
 }
 
+// Short keyword query for the fast Search API pass that precedes the full Research API call
+// -- gives the UI real source URLs to show while the deeper synthesis is still running.
+export function buildSearchQuery(leg: LegResult['leg'], company: CompanyInput): string {
+  switch (leg) {
+    case 'market':
+      return `${company.name} market size growth trends`;
+    case 'founders':
+      return `${company.founders.join(' ')} ${company.name} founder background`;
+    case 'competitive':
+      return `${company.name} competitors landscape`;
+  }
+}
+
+const LEG_TOPIC: Record<LegResult['leg'], string> = {
+  market: 'the market opportunity (size, growth, tailwinds/headwinds)',
+  founders: "the founders' professional background and domain experience",
+  competitive: 'the competitive landscape and differentiation',
+};
+
+// Batched, single call per leg: crunches each source's raw snippet(s) down to a short
+// claim-relevant summary, run once when the leg's research completes (not on citation click).
+export function buildSourceSummaryPrompt(
+  leg: LegResult['leg'],
+  company: CompanyInput,
+  sources: { url: string; title: string; snippets: string[] }[]
+): string {
+  const topic = LEG_TOPIC[leg];
+  const list = sources
+    .map((s, i) => `${i + 1}. URL: ${s.url}\n   Title: ${s.title}\n   Excerpt: ${s.snippets.join(' ... ').slice(0, 1500)}`)
+    .join('\n\n');
+
+  return (
+    `Below are raw excerpts from sources used to research ${company.name} regarding ${topic}. ` +
+    `For each source, write a short (1-2 sentence) plain-language summary of what that specific ` +
+    `excerpt says relevant to that topic. Do not add outside information, do not include citation ` +
+    `markers, and return one summary per source, matched back to its URL.\n\n${list}`
+  );
+}
+
 export function buildPrompt(leg: LegResult['leg'], company: CompanyInput, thesis: ThesisConfig): string {
   const header = companyHeader(company);
   const thesisLine = thesisContext(thesis);
