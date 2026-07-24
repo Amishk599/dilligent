@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CompanyInput, LegResult, ThesisConfig } from '@/lib/types';
 import sampleMemo from '@/fixtures/sample-memo.json';
+import Eyebrow from './Eyebrow';
 
 type LegStatus = 'pending' | 'running' | 'done' | 'error';
 
@@ -94,21 +95,29 @@ export default function ResearchProgress({ company, thesis, onComplete }: Resear
 
   return (
     <div className="space-y-6">
-      <p className="text-sm text-neutral-500">
-        Researching <span className="font-medium text-neutral-800">{company.name}</span> against a{' '}
-        {thesis.riskAppetite.toLowerCase()}-risk {thesis.stage} {thesis.sector} thesis...
-      </p>
+      <div className="space-y-1">
+        <Eyebrow className="text-accent-mustard">Researching</Eyebrow>
+        <p className="text-lg">
+          <span className="font-semibold">{company.name}</span>
+          <span className="text-white/50">
+            {' '}
+            against a {thesis.riskAppetite.toLowerCase()}-risk {thesis.stage} {thesis.sector} thesis
+          </span>
+        </p>
+      </div>
       <ul className="space-y-3">
         {LEG_ORDER.map((leg) => {
           const state = legStates[leg];
           return (
             <li
               key={leg}
-              className="flex items-center gap-3 rounded-lg border border-neutral-200 px-4 py-3"
+              className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-4"
             >
-              <StatusIcon status={state.status} />
+              <StatusTile status={state.status} />
               <span className="font-medium">{LEG_LABELS[leg]}</span>
-              <span className="ml-auto text-sm capitalize text-neutral-500">{state.status}</span>
+              <span className="ml-auto font-mono text-xs uppercase tracking-wider text-white/50">
+                {state.status}
+              </span>
             </li>
           );
         })}
@@ -117,10 +126,13 @@ export default function ResearchProgress({ company, thesis, onComplete }: Resear
   );
 }
 
-function StatusIcon({ status }: { status: LegStatus }) {
-  const base = 'h-2.5 w-2.5 rounded-full';
-  if (status === 'pending') return <span className={`${base} bg-neutral-300`} />;
-  if (status === 'running') return <span className={`${base} animate-pulse bg-blue-500`} />;
-  if (status === 'error') return <span className={`${base} bg-red-500`} />;
-  return <span className={`${base} bg-green-500`} />;
+const STATUS_TILE_CLASSES: Record<LegStatus, string> = {
+  pending: 'bg-white/10',
+  running: 'bg-accent-orange animate-pulse',
+  done: 'bg-accent-mustard',
+  error: 'bg-accent-brick',
+};
+
+function StatusTile({ status }: { status: LegStatus }) {
+  return <span className={`h-10 w-10 shrink-0 rounded-lg ${STATUS_TILE_CLASSES[status]}`} />;
 }

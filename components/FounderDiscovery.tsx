@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Button from './Button';
 
 interface FounderCandidate {
   name: string;
@@ -83,33 +84,36 @@ export default function FounderDiscovery({ companyName, website, onChange }: Fou
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-3">
-        <span className="text-sm font-medium text-neutral-700">Founders</span>
+        <span className="font-mono text-xs uppercase tracking-wider text-text-muted">Founders</span>
         {status !== 'loading' && (
-          <button
-            type="button"
-            onClick={handleFind}
-            disabled={!canSearch}
-            className="rounded-md border border-neutral-300 px-3 py-1 text-xs font-medium disabled:opacity-40"
-          >
+          <Button type="button" variant="secondary" size="sm" onClick={handleFind} disabled={!canSearch}>
             {status === 'done' ? 'Search again' : 'Find founders'}
-          </button>
+          </Button>
         )}
-        {status === 'loading' && <span className="text-sm text-neutral-500">Searching...</span>}
+        {status === 'loading' && <span className="font-mono text-xs text-text-muted">Searching...</span>}
       </div>
 
-      {status === 'error' && <p className="text-sm text-red-600">{error}</p>}
+      {status === 'error' && <p className="text-sm text-accent-brick">{error}</p>}
 
       {candidates.length > 0 && (
         <ul className="space-y-2">
           {candidates.map((c, i) => (
-            <li key={i} className="flex items-center gap-3 rounded-md border border-neutral-200 px-3 py-2">
-              <input type="checkbox" checked={c.selected} onChange={() => toggle(i)} />
+            <li
+              key={i}
+              className="flex items-center gap-3 rounded-[10px] border border-border-subtle bg-white px-3 py-2.5"
+            >
+              <input type="checkbox" checked={c.selected} onChange={() => toggle(i)} className="accent-accent-orange" />
               <div className="flex-1">
                 <p className="text-sm font-medium">{c.name}</p>
-                <p className="text-xs text-neutral-500">{c.title}</p>
+                <p className="text-xs text-text-muted">{c.title}</p>
               </div>
               {c.sourceUrl && (
-                <a href={c.sourceUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline">
+                <a
+                  href={c.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-mono text-xs uppercase tracking-wide text-accent-orange hover:underline"
+                >
                   verify
                 </a>
               )}
@@ -121,9 +125,16 @@ export default function FounderDiscovery({ companyName, website, onChange }: Fou
       {manualFounders.length > 0 && (
         <ul className="space-y-2">
           {manualFounders.map((name, i) => (
-            <li key={i} className="flex items-center gap-3 rounded-md border border-neutral-200 px-3 py-2">
+            <li
+              key={i}
+              className="flex items-center gap-3 rounded-[10px] border border-border-subtle bg-white px-3 py-2.5"
+            >
               <span className="flex-1 text-sm font-medium">{name}</span>
-              <button type="button" onClick={() => removeManual(i)} className="text-xs text-neutral-500 hover:underline">
+              <button
+                type="button"
+                onClick={() => removeManual(i)}
+                className="font-mono text-xs uppercase tracking-wide text-text-muted hover:underline"
+              >
                 remove
               </button>
             </li>
@@ -136,11 +147,11 @@ export default function FounderDiscovery({ companyName, website, onChange }: Fou
           value={manualName}
           onChange={(e) => setManualName(e.target.value)}
           placeholder="Add a founder not listed above"
-          className="flex-1 rounded-md border border-neutral-300 px-3 py-1.5 text-sm"
+          className="flex-1 rounded-[10px] border border-border-subtle bg-white px-3 py-1.5 text-sm outline-none focus:border-text-primary"
         />
-        <button type="button" onClick={addManual} className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm">
+        <Button type="button" variant="secondary" size="sm" onClick={addManual} withChevron={false}>
           Add
-        </button>
+        </Button>
       </div>
     </div>
   );

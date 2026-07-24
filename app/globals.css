@@ -1,1 +1,45 @@
 @import "tailwindcss";
+
+@theme {
+  --color-bg-cream: #f7f5ef;
+  --color-bg-dark: #16151f;
+  --color-text-primary: #141414;
+  --color-text-on-dark: #ffffff;
+  --color-accent-orange: #f5511e;
+  --color-accent-brick: #b93a22;
+  --color-accent-mustard: #f0a93e;
+  --color-accent-yellowgreen: #d6e14a;
+  --color-border-subtle: #e5e1d6;
+  --color-text-muted: #8c8878;
+
+  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+}
+
+body {
+  background-color: var(--color-bg-cream);
+  color: var(--color-text-primary);
+}
+
+/* Subtle grain texture for solid-color sections (orange banner, dark section). */
+.grain-overlay {
+  position: relative;
+  isolation: isolate;
+}
+
+.grain-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-repeat: repeat;
+}
+
+.grain-overlay > * {
+  position: relative;
+  z-index: 1;
+}

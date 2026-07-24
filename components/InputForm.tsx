@@ -3,12 +3,15 @@
 import { useState } from 'react';
 import type { CompanyInput, RiskAppetite, Sector, Stage, ThesisConfig } from '@/lib/types';
 import FounderDiscovery from './FounderDiscovery';
+import Button from './Button';
+import Eyebrow from './Eyebrow';
 
 const STAGES: Stage[] = ['Pre-seed', 'Seed', 'Series A'];
 const SECTORS: Sector[] = ['Fintech', 'AI-Dev-Tools', 'Consumer', 'Healthcare', 'Other'];
 const RISK_APPETITES: RiskAppetite[] = ['Conservative', 'Balanced', 'Aggressive'];
 
-const inputClass = 'w-full rounded-md border border-neutral-300 px-3 py-2 text-sm';
+const inputClass =
+  'w-full rounded-[10px] border border-border-subtle bg-white px-3 py-2.5 text-sm text-text-primary outline-none focus:border-text-primary';
 
 interface InputFormProps {
   onSubmit: (company: CompanyInput, thesis: ThesisConfig) => void;
@@ -39,8 +42,9 @@ export default function InputForm({ onSubmit }: InputFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-xl space-y-8">
-      <div className="space-y-4">
+    <form onSubmit={handleSubmit} className="max-w-xl space-y-6">
+      <div className="rounded-2xl border border-border-subtle bg-white p-6 space-y-5">
+        <Eyebrow>Company</Eyebrow>
         <Field label="Company name">
           <input required value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
         </Field>
@@ -57,61 +61,62 @@ export default function InputForm({ onSubmit }: InputFormProps) {
         <FounderDiscovery companyName={name} website={website} onChange={setFounders} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="Stage">
-          <select value={stage} onChange={(e) => setStage(e.target.value as Stage)} className={inputClass}>
-            {STAGES.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Sector">
-          <select value={sector} onChange={(e) => setSector(e.target.value as Sector)} className={inputClass}>
-            {SECTORS.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label={`Check size ($${checkSize.toLocaleString()})`}>
-          <input
-            type="range"
-            min={100_000}
-            max={10_000_000}
-            step={100_000}
-            value={checkSize}
-            onChange={(e) => setCheckSize(Number(e.target.value))}
-            className="w-full"
-          />
-        </Field>
-        <Field label="Risk appetite">
-          <select
-            value={riskAppetite}
-            onChange={(e) => setRiskAppetite(e.target.value as RiskAppetite)}
-            className={inputClass}
-          >
-            {RISK_APPETITES.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-        </Field>
+      <div className="rounded-2xl border border-border-subtle bg-white p-6 space-y-5">
+        <Eyebrow>Investment thesis</Eyebrow>
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Stage">
+            <select value={stage} onChange={(e) => setStage(e.target.value as Stage)} className={inputClass}>
+              {STAGES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Sector">
+            <select value={sector} onChange={(e) => setSector(e.target.value as Sector)} className={inputClass}>
+              {SECTORS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label={`Check size ($${checkSize.toLocaleString()})`}>
+            <input
+              type="range"
+              min={100_000}
+              max={10_000_000}
+              step={100_000}
+              value={checkSize}
+              onChange={(e) => setCheckSize(Number(e.target.value))}
+              className="w-full accent-accent-orange"
+            />
+          </Field>
+          <Field label="Risk appetite">
+            <select
+              value={riskAppetite}
+              onChange={(e) => setRiskAppetite(e.target.value as RiskAppetite)}
+              className={inputClass}
+            >
+              {RISK_APPETITES.map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </select>
+          </Field>
+        </div>
       </div>
 
-      <button
-        type="submit"
-        disabled={!canSubmit}
-        className="rounded-md bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-40"
-      >
-        Run research
-      </button>
-      {!canSubmit && founders.length === 0 && name.trim() && website.trim() && (
-        <p className="text-sm text-neutral-500">Find and confirm at least one founder to continue.</p>
-      )}
+      <div className="space-y-2">
+        <Button type="submit" disabled={!canSubmit}>
+          Run research
+        </Button>
+        {!canSubmit && founders.length === 0 && name.trim() && website.trim() && (
+          <p className="font-mono text-xs text-text-muted">Find and confirm at least one founder to continue.</p>
+        )}
+      </div>
     </form>
   );
 }
@@ -119,7 +124,7 @@ export default function InputForm({ onSubmit }: InputFormProps) {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block space-y-1.5">
-      <span className="text-sm font-medium text-neutral-700">{label}</span>
+      <span className="font-mono text-xs uppercase tracking-wider text-text-muted">{label}</span>
       {children}
     </label>
   );
