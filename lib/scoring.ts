@@ -14,6 +14,10 @@ const THRESHOLDS: Record<RiskAppetite, { strongFit: number; fitWithReservations:
   Aggressive: { strongFit: 60, fitWithReservations: 40 },
 };
 
+export function weightsFor(stage: Stage): LegWeights {
+  return WEIGHTS[stage];
+}
+
 export function computeComposite(legs: LegResult[], stage: Stage): number {
   const weights = WEIGHTS[stage];
   const validLegs = legs.filter((leg) => !leg.error);
