@@ -1,0 +1,62 @@
+{
+  "company": {
+    "name": "Nimbus Ledger",
+    "website": "https://nimbusledger.io",
+    "founders": ["Ava Chen", "Marcus Reyes"]
+  },
+  "thesis": {
+    "stage": "Seed",
+    "sector": "Fintech",
+    "checkSize": 1500000,
+    "riskAppetite": "Balanced"
+  },
+  "legs": [
+    {
+      "leg": "market",
+      "content": "Embedded expense-management APIs for SMB fintech platforms are riding the broader shift toward vertical-specific financial infrastructure, with the addressable market for SMB spend-management tooling estimated in the low tens of billions and growing at a double-digit annual clip [[1]]. Demand is being pulled forward by banks and payroll platforms racing to bolt on spend controls without building them natively [[1]]. The headwind is that several well-capitalized incumbents are moving downmarket into the same embedded-API niche, which compresses the window for a seed-stage entrant to establish distribution before the category consolidates [[2]].",
+      "score": 65,
+      "risks": [
+        "Category is attracting incumbent attention faster than typical for a seed-stage vertical, narrowing the differentiation window."
+      ],
+      "sources": [
+        { "url": "https://example.com/reports/smb-spend-management-2026", "title": "SMB Spend Management Market Outlook 2026" },
+        { "url": "https://example.com/news/embedded-finance-consolidation", "title": "Embedded Finance Vendors Move Downmarket" }
+      ]
+    },
+    {
+      "leg": "founders",
+      "content": "Ava Chen previously led payments infrastructure engineering at a mid-size payroll processor, shipping the ACH disbursement rails still in production there today [[1]]. Marcus Reyes co-founded an earlier B2B SaaS company that reached an acquihire exit, giving the team one prior go-to-market cycle together as co-founders rather than first-time collaborators [[2]]. Neither founder has previously operated at CEO scale past ~30 employees, which is a reasonable but real gap for a team pitching a platform play into enterprise-adjacent fintech buyers [[2]].",
+      "score": 70,
+      "risks": [
+        "Neither founder has operated a company past roughly 30 employees, untested at the scale this thesis assumes."
+      ],
+      "sources": [
+        { "url": "https://example.com/profiles/ava-chen-payroll-infra", "title": "Payroll Infra Engineering Lead Profile" },
+        { "url": "https://example.com/news/acquihire-b2b-saas-2022", "title": "B2B SaaS Acquihire Announcement, 2022" }
+      ]
+    },
+    {
+      "leg": "competitive",
+      "content": "The direct competitive set includes two well-funded embedded-spend API vendors and one legacy expense-management incumbent now shipping a comparable API layer [[1]]. Nimbus Ledger's differentiation is a narrower focus on SMB payroll-platform integrations rather than general ledger sync, which is defensible short-term but not structurally moat-forming — the same incumbents named above have signaled roadmap overlap into this niche within the next product cycle [[2]]. No patent or exclusive-data moat has surfaced in public materials [[3]].",
+      "score": 60,
+      "risks": [
+        "No structural moat identified; differentiation rests on a narrower focus that incumbents have signaled they will contest.",
+        "Two of three named competitors are materially better capitalized."
+      ],
+      "sources": [
+        { "url": "https://example.com/comparisons/embedded-spend-api-landscape", "title": "Embedded Spend API Competitive Landscape" },
+        { "url": "https://example.com/news/incumbent-roadmap-smb-payroll", "title": "Incumbent Announces SMB Payroll Integration Roadmap" },
+        { "url": "https://example.com/filings/nimbus-ledger-public-materials", "title": "Nimbus Ledger Public Materials Review" }
+      ]
+    }
+  ],
+  "compositeScore": 66,
+  "recommendation": "Fit with Reservations",
+  "risksAndOpenQuestions": [
+    "Category is attracting incumbent attention faster than typical for a seed-stage vertical, narrowing the differentiation window.",
+    "Neither founder has operated a company past roughly 30 employees, untested at the scale this thesis assumes.",
+    "No structural moat identified; differentiation rests on a narrower focus that incumbents have signaled they will contest.",
+    "Two of three named competitors are materially better capitalized.",
+    "Open question: no evidence yet of signed payroll-platform distribution partnerships beyond stated go-to-market intent."
+  ]
+}
