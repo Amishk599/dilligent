@@ -79,12 +79,17 @@ export function buildOutputSchema(leg: LegResult['leg']) {
       key_points: {
         type: 'array',
         items: { type: 'string' },
-        description: 'Short bullet-point takeaways summarizing the narrative.',
+        description:
+          'Short bullet-point takeaways summarizing the narrative. Use the exact same inline ' +
+          '[[n]] citation marker convention as narrative (n = 1-based index into the sources ' +
+          'this response returns) -- never any other citation or reference format.',
       },
       risks: {
         type: 'array',
         items: { type: 'string' },
-        description: 'Concrete, non-generic risks or open questions surfaced by this research.',
+        description:
+          'Concrete, non-generic risks or open questions surfaced by this research. Do not ' +
+          'include citation markers or reference tags of any kind in this field.',
       },
       [scoreField]: {
         type: 'integer',

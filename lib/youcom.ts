@@ -89,6 +89,22 @@ async function searchWeb(query: string): Promise<{ url: string; title: string }[
   }
 }
 
+// The model is asked to only use numeric [[n]] citation markers (matching this leg's
+// sources array), but sometimes drifts into other bracket-like reference formats (e.g.
+// "[[page14websearch1]]"). Those can't be resolved to a real source, so strip them --
+// along with one adjacent space -- rather than leaking raw bracket syntax into the UI.
+// Well-formed numeric markers are left in place for the UI to resolve against sources.
+function stripMalformedCitations(text: string): string {
+  return text.replace(/\s?\[\[(?!\d+\]\])[^[\]]*\]\]/g, '');
+}
+
+// Risks are aggregated across all 3 legs without per-risk source attribution, so no
+// citation marker in this field -- numeric or not -- can ever resolve to a clickable
+// source. Strip all of them rather than showing dead reference syntax.
+function stripAllCitationMarkers(text: string): string {
+  return text.replace(/\s?\[\[[^[\]]*\]\]/g, '');
+}
+
 // Batched, single lightweight Research API call per leg: crunches each source's raw snippet(s)
 // into a short claim-relevant summary. Run once right after the leg's main call completes
 // (not lazily per citation click) so opening the citation panel feels instant. Best-effort --
@@ -163,15 +179,19 @@ export async function runResearchLeg(
     };
   }
 
-  const risks = Array.isArray(content.risks) ? (content.risks as unknown[]).map(String) : [];
-  const keyPoints = Array.isArray(content.key_points) ? (content.key_points as unknown[]).map(String) : [];
+  const risks = Array.isArray(content.risks)
+    ? (content.risks as unknown[]).map((r) => stripAllCitationMarkers(String(r)))
+    : [];
+  const keyPoints = Array.isArray(content.key_points)
+    ? (content.key_points as unknown[]).map((p) => stripMalformedCitations(String(p)))
+    : [];
 
   const summaries = await summarizeSources(leg, company, sources);
   const summarizedSources = sources.map((s) => ({ ...s, summary: summaries.get(s.url) }));
 
   return {
     leg,
-    content: String(content.narrative ?? ''),
+    content: stripMalformedCitations(String(content.narrative ?? '')),
     keyPoints,
     score: Number(content[scoreField] ?? 0),
     risks,

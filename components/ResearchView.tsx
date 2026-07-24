@@ -29,12 +29,6 @@ const LEG_LABELS: Record<LegResult['leg'], string> = {
   competitive: 'Competitive Position',
 };
 
-const LEG_TILE_CLASSES: Record<LegResult['leg'], string> = {
-  market: 'bg-accent-orange',
-  founders: 'bg-accent-mustard',
-  competitive: 'bg-accent-brick',
-};
-
 const RECOMMENDATION_STYLES: Record<Memo['recommendation'], string> = {
   'Strong Fit': 'bg-accent-yellowgreen text-text-primary',
   'Fit with Reservations': 'bg-accent-mustard text-text-primary',
@@ -248,13 +242,22 @@ function ScoreHeader({
   );
 }
 
+// Score -> tile color: red-to-green scale so the tile is a quick visual read of the
+// dimension's strength, independent of which leg (market/founders/competitive) it is.
+function scoreTileClass(score: number): string {
+  if (score >= 80) return 'bg-accent-yellowgreen';
+  if (score >= 60) return 'bg-accent-mustard';
+  if (score >= 40) return 'bg-accent-orange';
+  return 'bg-accent-brick';
+}
+
 function DimensionCard({ slot, weight }: { slot: LegSlot; weight: number }) {
   return (
     <div className="rounded-2xl border border-border-subtle bg-white p-5">
       <div
         className={`h-10 w-10 rounded-lg ${
-          slot.status === 'done'
-            ? LEG_TILE_CLASSES[slot.leg]
+          slot.status === 'done' && slot.result
+            ? scoreTileClass(slot.result.score)
             : slot.status === 'running'
               ? 'animate-pulse bg-accent-orange/50'
               : slot.status === 'error'
@@ -320,7 +323,7 @@ function EvidenceSection({ slot, onCiteClick }: { slot: LegSlot; onCiteClick: (s
   return (
     <details className="group rounded-2xl border border-border-subtle bg-white p-5" open>
       <summary className="flex cursor-pointer items-center gap-3 font-medium marker:content-none [&::-webkit-details-marker]:hidden">
-        <span className={`h-8 w-8 shrink-0 rounded-lg ${LEG_TILE_CLASSES[leg.leg]}`} />
+        <span className={`h-8 w-8 shrink-0 rounded-lg ${scoreTileClass(leg.score)}`} />
         {LEG_LABELS[leg.leg]}
         <svg
           className="ml-auto h-3 w-3 text-text-muted transition-transform group-open:rotate-90"
@@ -336,7 +339,7 @@ function EvidenceSection({ slot, onCiteClick }: { slot: LegSlot; onCiteClick: (s
             {leg.keyPoints.map((point, i) => (
               <li key={i} className="flex gap-2">
                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-orange" />
-                <span>{point}</span>
+                <span>{renderInline(point, leg.sources, onCiteClick)}</span>
               </li>
             ))}
           </ul>
@@ -403,7 +406,7 @@ function CitedMarkdown({
   );
 }
 
-const INLINE_PATTERN = /\*\*(.+?)\*\*|\[\[(\d+)\]\]/g;
+const INLINE_PATTERN = /\*\*(.+?)\*\*|\[\[([^\][]+)\]\]/g;
 
 function renderInline(
   text: string,
@@ -425,7 +428,9 @@ function renderInline(
     if (bold !== undefined) {
       nodes.push(<strong key={key++}>{bold}</strong>);
     } else if (citation !== undefined) {
-      const source = sources[Number(citation) - 1];
+      const index = Number(citation);
+      const isNumeric = Number.isInteger(index);
+      const source = isNumeric ? sources[index - 1] : undefined;
       if (source) {
         nodes.push(
           <button
@@ -438,9 +443,18 @@ function renderInline(
             [{citation}]
           </button>
         );
-      } else {
-        nodes.push(`[[${citation}]]`);
+      } else if (isNumeric) {
+        // The Research API's citation numbering doesn't always stay within the bounds of
+        // the sources array it returns -- still show the marker (non-clickable) rather
+        // than silently dropping evidence that a claim was cited.
+        nodes.push(
+          <span key={key++} title="Source unavailable" className="font-mono text-xs text-text-muted">
+            [{citation}]
+          </span>
+        );
       }
+      // Non-numeric/malformed citation markers are dropped rather than leaking raw
+      // "[[...]]" syntax into the rendered text.
     }
 
     lastIndex = INLINE_PATTERN.lastIndex;
